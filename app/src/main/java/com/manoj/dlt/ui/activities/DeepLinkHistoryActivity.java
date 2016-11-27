@@ -73,7 +73,6 @@ public class DeepLinkHistoryActivity extends AppCompatActivity
         _deepLinkInput = (EditText) findViewById(R.id.deep_link_input);
         _listView = (ListView) findViewById(R.id.deep_link_list_view);
         _adapter = new DeepLinkListAdapter(new ArrayList<DeepLinkInfo>(), this);
-        configureListView();
         configureDeepLinkInput();
         findViewById(R.id.deep_link_fire).setOnClickListener(new View.OnClickListener()
         {
@@ -85,6 +84,7 @@ public class DeepLinkHistoryActivity extends AppCompatActivity
         });
         setFabMenuActions();
         setAppropriateLayout();
+        configureListView();
     }
 
     private void setFabMenuActions()
