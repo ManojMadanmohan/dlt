@@ -27,6 +27,14 @@ android {
         resConfig "en"
         buildConfigField("com.manoj.dlt.Constants.CONFIG", "CONFIG", "com.manoj.dlt.Constants.CONFIG.SANDBOX")
         //buildConfigField("com.manoj.dlt.Constants.CONFIG", "CONFIG", "com.manoj.dlt.Constants.CONFIG.PRODUCTION")
+        applicationVariants.all { variant ->
+            variant.outputs.each { output ->
+                if (variant.buildType.name.equals("release")) {
+                    def outputFileName = "deep link tester-release-v${variant.versionName}.apk"
+                    output.outputFile = new File(output.outputFile.parent, outputFileName)
+                }
+            }
+        }
     }
     buildTypes {
         release {
