@@ -103,7 +103,7 @@ public class DeepLinkHistoryActivity extends AppCompatActivity
                 if (Constants.isFirebaseAvailable(DeepLinkHistoryActivity.this))
                 {
                     String userId = ProfileFeature.getInstance(DeepLinkHistoryActivity.this).getUserId();
-                    Utilities.showAlert("Fire from your PC", "go to https://swelteringfire-2158.firebaseapp.com/" + userId, DeepLinkHistoryActivity.this);
+                    Utilities.showAlert("Fire from your PC", "go to https://sweltering-fire-2158.firebaseapp.com/" + userId, DeepLinkHistoryActivity.this);
                 } else
                 {
                     Utilities.raiseError(getString(R.string.play_services_error), DeepLinkHistoryActivity.this);
