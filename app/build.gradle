@@ -9,6 +9,7 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 apply plugin: 'io.fabric'
 
 repositories {
@@ -62,5 +63,6 @@ dependencies {
         transitive = true;
     }
     compile 'com.getkeepsafe.taptargetview:taptargetview:1.5.1'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
 apply plugin: 'com.google.gms.google-services'
