@@ -50,8 +50,8 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
     private var _previousClipboardText: String? = null
     private var _historyUpdateListener: ValueEventListener? = null
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_deep_link_history)
         initView()
         _historyUpdateListener = getFirebaseHistoryListener()
