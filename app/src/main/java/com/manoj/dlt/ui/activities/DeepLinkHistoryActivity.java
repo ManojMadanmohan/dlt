@@ -102,7 +102,7 @@ public class DeepLinkHistoryActivity extends AppCompatActivity
             {
                 if (Constants.isFirebaseAvailable(DeepLinkHistoryActivity.this))
                 {
-                    String userId = ProfileFeature.getInstance(DeepLinkHistoryActivity.this).getUserId();
+                    String userId = ProfileFeature.Companion.getInstance(DeepLinkHistoryActivity.this).getUserId();
                     Utilities.showAlert("Fire from your PC", "go to " + Constants.WEB_APP_LINK + userId, DeepLinkHistoryActivity.this);
                 } else
                 {
@@ -350,7 +350,7 @@ public class DeepLinkHistoryActivity extends AppCompatActivity
             attachFirebaseListener();
         } else
         {
-            List<DeepLinkInfo> deepLinkInfoList = DeepLinkHistoryFeature.getInstance(this).getLinkHistoryFromFileSystem();
+            List<DeepLinkInfo> deepLinkInfoList = DeepLinkHistoryFeature.Companion.getInstance(this).getLinkHistoryFromFileSystem();
             if (deepLinkInfoList.size() > 0)
             {
                 showShortcutBannerIfNeeded();
@@ -406,7 +406,7 @@ public class DeepLinkHistoryActivity extends AppCompatActivity
     {
         if (Constants.isFirebaseAvailable(this))
         {
-            DatabaseReference baseUserReference = ProfileFeature.getInstance(this).getCurrentUserFirebaseBaseRef();
+            DatabaseReference baseUserReference = ProfileFeature.Companion.getInstance(this).getCurrentUserFirebaseBaseRef();
             DatabaseReference linkReference = baseUserReference.child(DbConstants.USER_HISTORY);
             linkReference.addValueEventListener(_historyUpdateListener);
         }
@@ -416,7 +416,7 @@ public class DeepLinkHistoryActivity extends AppCompatActivity
     {
         if (Constants.isFirebaseAvailable(this))
         {
-            DatabaseReference baseUserReference = ProfileFeature.getInstance(this).getCurrentUserFirebaseBaseRef();
+            DatabaseReference baseUserReference = ProfileFeature.Companion.getInstance(this).getCurrentUserFirebaseBaseRef();
             DatabaseReference linkReference = baseUserReference.child(DbConstants.USER_HISTORY);
             linkReference.removeEventListener(_historyUpdateListener);
         }

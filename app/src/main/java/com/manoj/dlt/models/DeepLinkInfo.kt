@@ -5,8 +5,8 @@ import android.util.Log
 import org.json.JSONException
 import org.json.JSONObject
 
-data class DeepLinkInfo(val deepLink: String, val activityLabel: String,
-                        val packageName: String, val updatedTime: Long) : Comparable<DeepLinkInfo>
+data class DeepLinkInfo(val deepLink: String, val activityLabel: String?,
+                        val packageName: String?, val updatedTime: Long) : Comparable<DeepLinkInfo>
 {
     val id = generateId()
 
