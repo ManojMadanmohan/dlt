@@ -8,6 +8,7 @@ import com.manoj.dlt.interfaces.IDeepLinkHistory
 import com.manoj.dlt.models.DeepLinkInfo
 import com.manoj.dlt.models.ResultType
 import com.manoj.dlt.utils.SingletonHolder
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.*
 
@@ -18,6 +19,7 @@ class DeepLinkHistoryFeature private constructor(contextIn: Context): IDeepLinkH
 
     init {
         _fileSystem = FileSystem(_context, Constants.DEEP_LINK_HISTORY_KEY)
+        EventBus.getDefault().register(this)
     }
 
     companion object: SingletonHolder<DeepLinkHistoryFeature, Context> (::DeepLinkHistoryFeature) {
