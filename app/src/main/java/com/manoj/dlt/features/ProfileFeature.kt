@@ -12,7 +12,7 @@ import java.util.*
 class ProfileFeature private constructor(context: Context): IProfileFeature
 {
     private val _fileSystem: FileSystem
-    private var _userId: String
+    private var _userId: String?
 
     init {
         _fileSystem = Utilities.getOneTimeStore(context)
@@ -20,7 +20,7 @@ class ProfileFeature private constructor(context: Context): IProfileFeature
         if(_userId == null)
         {
             _userId = generateUserId()
-            _fileSystem.write(Constants.USER_ID_KEY, _userId)
+            _fileSystem.write(Constants.USER_ID_KEY, _userId!!)
         }
 
         Log.d("profile", "user id = " + _userId)
@@ -31,7 +31,7 @@ class ProfileFeature private constructor(context: Context): IProfileFeature
     }
 
     override fun getUserId(): String {
-        return _userId
+        return _userId!!
     }
 
     override fun getCurrentUserFirebaseBaseRef(): DatabaseReference {

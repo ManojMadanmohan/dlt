@@ -21,7 +21,7 @@ class FileSystem(context: Context, key: String) : IFileSystem {
         _editor.commit()
     }
 
-    override fun read(key: String): String {
+    override fun read(key: String): String? {
         return _preferences.getString(key, null)
     }
 
@@ -39,8 +39,8 @@ class FileSystem(context: Context, key: String) : IFileSystem {
         return ArrayList(_preferences.all.keys)
     }
 
-    override fun values(): List<String> {
-        val values = ArrayList<String>()
+    override fun values(): List<String?> {
+        val values = ArrayList<String?>()
         for (key in keyList()) {
             val value = read(key)
             values.add(value)
