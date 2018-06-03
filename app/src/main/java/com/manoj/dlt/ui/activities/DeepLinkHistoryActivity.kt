@@ -31,6 +31,7 @@ import com.manoj.dlt.features.ProfileFeature
 import com.manoj.dlt.models.DeepLinkInfo
 import com.manoj.dlt.models.ResultType
 import com.manoj.dlt.ui.ConfirmShortcutDialog
+import com.manoj.dlt.ui.TutorialUtil
 import com.manoj.dlt.ui.adapters.DeepLinkListAdapter
 import com.manoj.dlt.utils.TextChangedListener
 import com.manoj.dlt.utils.Utilities
@@ -259,23 +260,9 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
         demoHeaderView.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.White, theme))
         _listView!!.addHeaderView(demoHeaderView)
 
-        TapTargetSequence(this)
-                .targets(TapTarget.forView(findViewById(R.id.deep_link_input), getString(R.string.onboarding_input_title))
-                        .dimColor(android.R.color.black)
-                        .outerCircleColor(R.color.SlateGray)
-                        .targetCircleColor(R.color.fabColorNormal)
-                        .tintTarget(false),
-                        TapTarget.forView(findViewById(R.id.deep_link_fire), getString(R.string.onboarding_launch_title))
-                                .dimColor(android.R.color.black)
-                                .outerCircleColor(R.color.SlateGray)
-                                .targetCircleColor(R.color.fabColorNormal)
-                                .tintTarget(false),
-                        TapTarget.forView(demoHeaderView, getString(R.string.onboarding_history_title))
-                                .dimColor(android.R.color.black)
-                                .outerCircleColor(R.color.SlateGray)
-                                .targetCircleColor(R.color.fabColorNormal)
-                                .tintTarget(false))
-                .listener(object : TapTargetSequence.Listener {
+        TutorialUtil.showTutorial(this, findViewById(R.id.deep_link_input),
+                findViewById(R.id.deep_link_fire), demoHeaderView,
+                object : TapTargetSequence.Listener {
                     override fun onSequenceFinish() {
                         _listView!!.removeHeaderView(demoHeaderView)
                     }
@@ -283,8 +270,7 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
                     override fun onSequenceCanceled(lastTarget: TapTarget) {
                         _listView!!.removeHeaderView(demoHeaderView)
                     }
-                })
-                .start()
+                });
     }
 
     private fun attachFirebaseListener() {
