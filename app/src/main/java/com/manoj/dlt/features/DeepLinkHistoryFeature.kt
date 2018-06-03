@@ -48,7 +48,7 @@ class DeepLinkHistoryFeature private constructor(contextIn: Context): IDeepLinkH
         }
     }
 
-    override fun getLinkHistoryFromFileSystem(): List<DeepLinkInfo> {
+    override fun getLinkHistoryFromFileSystem(): ArrayList<DeepLinkInfo> {
         val deepLinks = ArrayList<DeepLinkInfo>()
         for (deepLinkInfoJson in _fileSystem.values()) {
             var deepLinkInfo = DeepLinkInfo.fromJson(deepLinkInfoJson);
