@@ -45,7 +45,7 @@ class LinkQueueHandler private constructor(context: Context) {
 
     private fun getQueueListener(): FirebaseChildAddedListener {
         return object : FirebaseChildAddedListener() {
-            override fun onChildAdded(dataSnapshot: DataSnapshot, s: String) {
+            override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
                 val qId = dataSnapshot.key
                 val deepLink = dataSnapshot.value.toString()
                 Utilities.checkAndFireDeepLink(deepLink, context)
