@@ -34,8 +34,7 @@ import com.manoj.dlt.models.ResultType
 import com.manoj.dlt.ui.ConfirmShortcutDialog
 import com.manoj.dlt.ui.TutorialUtil
 import com.manoj.dlt.ui.adapters.DeepLinkListAdapter
-import com.manoj.dlt.utils.TextChangedListener
-import com.manoj.dlt.utils.Utilities
+import com.manoj.dlt.utils.*
 import hotchemi.android.rate.AppRate
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -117,11 +116,11 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
 
     private fun configureListView() {
         _listView!!.setAdapter(_adapter)
-        _listView!!.setOnItemClickListener(AdapterView.OnItemClickListener { adapterView, view, position, l ->
+        _listView!!.setOnItemClickListener( { adapterView, view, position, l ->
             val (deepLink) = _adapter!!.getItem(position) as DeepLinkInfo
-            setDeepLinkInputText(deepLink)
+            _deepLinkInput!!.setTextWithSelection(deepLink)
         })
-        _listView!!.setOnItemLongClickListener(AdapterView.OnItemLongClickListener { parent, view, position, id ->
+        _listView!!.setOnItemLongClickListener( { parent, view, position, id ->
             showConfirmShortcutDialog(_adapter!!.getItem(position) as DeepLinkInfo)
             true
         })
@@ -141,14 +140,12 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
 
     private fun configureDeepLinkInput() {
         _deepLinkInput!!.requestFocus()
-        _deepLinkInput!!.setOnEditorActionListener(TextView.OnEditorActionListener { textView, actionId, keyEvent ->
-            if (shouldFireDeepLink(actionId)) {
+        _deepLinkInput!!.setOnEditorActionListener(object: OnTextViewForward {
+            override fun onForward(): Boolean {
                 extractAndFireLink()
-                true
-            } else {
-                false
+                return true
             }
-        })
+        });
         _deepLinkInput!!.addTextChangedListener(object : TextChangedListener() {
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
                 _fabMenu!!.collapse()
@@ -159,8 +156,8 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
     }
 
     private fun pasteFromClipboard() {
-        var copy = _presenter.getInputString(this, _deepLinkInput!!.getText().toString())
-        setDeepLinkInputText(copy)
+        var copy = _presenter.getInputString(this, _deepLinkInput!!.getTextStr())
+        _deepLinkInput!!.setTextWithSelection(copy)
     }
 
     private fun setAppropriateLayout() {
@@ -181,7 +178,7 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
     }
 
     fun extractAndFireLink() {
-        val deepLinkUri = _deepLinkInput!!.getText().toString()
+        val deepLinkUri = _deepLinkInput!!.getTextStr()
         Utilities.checkAndFireDeepLink(deepLinkUri, this)
     }
 
@@ -205,7 +202,7 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onEvent(deepLinkFireEvent: DeepLinkFireEvent) {
         val deepLinkString = deepLinkFireEvent.deepLinkInfo!!.deepLink
-        setDeepLinkInputText(deepLinkString)
+        _deepLinkInput!!.setTextWithSelection(deepLinkString)
         if (deepLinkFireEvent.resultType == ResultType.SUCCESS) {
             _adapter!!.updateResults(deepLinkString)
         } else {
@@ -265,8 +262,8 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
         return object: DeepLinkHistoryUpdateListener {
             override fun onUpdate(deepLinkInfos: ArrayList<DeepLinkInfo>) {
                 _adapter!!.updateBaseData(deepLinkInfos)
-                if (_deepLinkInput != null && _deepLinkInput!!.getText().length > 0) {
-                    _adapter!!.updateResults(_deepLinkInput!!.getText().toString())
+                if (_deepLinkInput!!.hasText()) {
+                    _adapter!!.updateResults(_deepLinkInput!!.getTextStr())
                 }
                 if (deepLinkInfos.size > 0) {
                     showShortcutBannerIfNeeded()
@@ -274,32 +271,6 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
             }
         }
     }
-
-    private fun getFirebaseHistoryListener(): ValueEventListener {
-        return object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                findViewById(R.id.progress_wheel).visibility = View.GONE
-                val deepLinkInfos = ArrayList<DeepLinkInfo>()
-                for (child in dataSnapshot.children) {
-                    val info = Utilities.getLinkInfo(child)
-                    deepLinkInfos.add(info)
-                }
-                Collections.sort(deepLinkInfos)
-                _adapter!!.updateBaseData(deepLinkInfos)
-                if (_deepLinkInput != null && _deepLinkInput!!.getText().length > 0) {
-                    _adapter!!.updateResults(_deepLinkInput!!.getText().toString())
-                }
-                if (deepLinkInfos.size > 0) {
-                    showShortcutBannerIfNeeded()
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-
-            }
-        }
-    }
-
 
     private fun showShortcutBannerIfNeeded() {
         if (!Utilities.isShortcutHintSeen(this)) {
@@ -309,17 +280,6 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
                 findViewById(R.id.shortcut_hint_banner).visibility = View.GONE
             }
         }
-    }
-
-    private fun shouldFireDeepLink(actionId: Int): Boolean {
-        return if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_GO || actionId == EditorInfo.IME_ACTION_NEXT) {
-            true
-        } else false
-    }
-
-    private fun setDeepLinkInputText(text: String) {
-        _deepLinkInput!!.setText(text)
-        _deepLinkInput!!.setSelection(text.length)
     }
 
     private fun setContentInFocus(hideFocus: Boolean) {
