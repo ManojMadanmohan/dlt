@@ -28,6 +28,7 @@ import com.manoj.dlt.R
 import com.manoj.dlt.events.DeepLinkFireEvent
 import com.manoj.dlt.features.DeepLinkHistoryFeature
 import com.manoj.dlt.features.ProfileFeature
+import com.manoj.dlt.interfaces.DeepLinkHistoryUpdateListener
 import com.manoj.dlt.models.DeepLinkInfo
 import com.manoj.dlt.models.ResultType
 import com.manoj.dlt.ui.ConfirmShortcutDialog
@@ -40,6 +41,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.util.*
+import kotlin.collections.ArrayList
 
 class DeepLinkHistoryActivity: AppCompatActivity() {
 
@@ -48,14 +50,17 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
     private var _fabMenu: FloatingActionsMenu? = null
     private var _deepLinkInput: EditText? = null
     private var _adapter: DeepLinkListAdapter? = null
-    private var _previousClipboardText: String? = null
-    private var _historyUpdateListener: ValueEventListener? = null
+
+    private var _presenter: DeepLinkHistoryPresenter = getPresenter();
+
+    fun getPresenter(): DeepLinkHistoryPresenter {
+        return DeepLinkHistoryPresenter(getHistoryUpdateListener())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_deep_link_history)
         initView()
-        _historyUpdateListener = getFirebaseHistoryListener()
     }
 
     private fun initView() {
@@ -154,25 +159,8 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
     }
 
     private fun pasteFromClipboard() {
-        val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        if (!Utilities.isProperUri(_deepLinkInput!!.getText().toString()) && clipboardManager.hasPrimaryClip()) {
-            val clipItem = clipboardManager.primaryClip.getItemAt(0)
-            if (clipItem != null) {
-                if (clipItem.text != null) {
-                    val clipBoardText = clipItem.text.toString()
-                    if (Utilities.isProperUri(clipBoardText) && clipBoardText != _previousClipboardText) {
-                        setDeepLinkInputText(clipBoardText)
-                        _previousClipboardText = clipBoardText
-                    }
-                } else if (clipItem.uri != null) {
-                    val clipBoardText = clipItem.uri.toString()
-                    if (Utilities.isProperUri(clipBoardText) && clipBoardText != _previousClipboardText) {
-                        setDeepLinkInputText(clipBoardText)
-                        _previousClipboardText = clipBoardText
-                    }
-                }
-            }
-        }
+        var copy = _presenter.getInputString(this, _deepLinkInput!!.getText().toString())
+        setDeepLinkInputText(copy)
     }
 
     private fun setAppropriateLayout() {
@@ -210,7 +198,7 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
 
     override fun onStop() {
         EventBus.getDefault().unregister(this)
-        removeFirebaseListener()
+        _presenter.removeFirebaseListener(this)
         super.onStop()
     }
 
@@ -241,7 +229,7 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
     private fun initListViewData() {
         if (Constants.isFirebaseAvailable(this)) {
             //Attach callback to init adapter from data in firebase
-            attachFirebaseListener()
+            _presenter.attachFirebaseListener(this);
         } else {
             val deepLinkInfoList = DeepLinkHistoryFeature.getInstance(this).getLinkHistoryFromFileSystem()
             if (deepLinkInfoList.size > 0) {
@@ -273,19 +261,17 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
                 });
     }
 
-    private fun attachFirebaseListener() {
-        if (Constants.isFirebaseAvailable(this)) {
-            val baseUserReference = ProfileFeature.getInstance(this).getCurrentUserFirebaseBaseRef()
-            val linkReference = baseUserReference.child(DbConstants.USER_HISTORY)
-            linkReference.addValueEventListener(_historyUpdateListener)
-        }
-    }
-
-    private fun removeFirebaseListener() {
-        if (Constants.isFirebaseAvailable(this)) {
-            val baseUserReference = ProfileFeature.getInstance(this).getCurrentUserFirebaseBaseRef()
-            val linkReference = baseUserReference.child(DbConstants.USER_HISTORY)
-            linkReference.removeEventListener(_historyUpdateListener)
+    private fun getHistoryUpdateListener(): DeepLinkHistoryUpdateListener {
+        return object: DeepLinkHistoryUpdateListener {
+            override fun onUpdate(deepLinkInfos: ArrayList<DeepLinkInfo>) {
+                _adapter!!.updateBaseData(deepLinkInfos)
+                if (_deepLinkInput != null && _deepLinkInput!!.getText().length > 0) {
+                    _adapter!!.updateResults(_deepLinkInput!!.getText().toString())
+                }
+                if (deepLinkInfos.size > 0) {
+                    showShortcutBannerIfNeeded()
+                }
+            }
         }
     }
 
