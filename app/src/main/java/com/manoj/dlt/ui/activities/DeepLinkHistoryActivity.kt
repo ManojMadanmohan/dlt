@@ -48,6 +48,7 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
     private var _listView: ListView? = null
     private var _fabMenu: FloatingActionsMenu? = null
     private var _deepLinkInput: EditText? = null
+    private var _privacyPolicy: TextView? = null
     private var _adapter: DeepLinkListAdapter? = null
 
     private var _presenter: DeepLinkHistoryPresenter = getPresenter();
@@ -65,12 +66,14 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
     private fun initView() {
         _deepLinkInput = findViewById(R.id.deep_link_input) as EditText
         _listView = findViewById(R.id.deep_link_list_view) as ListView
+        _privacyPolicy = findViewById(R.id.privacy_policy) as TextView
         _adapter = DeepLinkListAdapter(ArrayList(), this)
         configureDeepLinkInput()
         findViewById(R.id.deep_link_fire).setOnClickListener { extractAndFireLink() }
         setFabMenuActions()
         setAppropriateLayout()
         configureListView()
+        configurePrivacyPolicy()
     }
 
 
@@ -123,6 +126,15 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
         _listView!!.setOnItemLongClickListener( { parent, view, position, id ->
             showConfirmShortcutDialog(_adapter!!.getItem(position) as DeepLinkInfo)
             true
+        })
+    }
+
+    private fun configurePrivacyPolicy() {
+        _privacyPolicy!!.setOnClickListener(object: View.OnClickListener {
+            override fun onClick(p0: View?) {
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.PRIVACY_POLICY_URL))
+                startActivity(browserIntent)
+            }
         })
     }
 

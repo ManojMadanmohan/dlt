@@ -18,6 +18,7 @@ object Constants{
      const val USER_ID_KEY = "user_id"
      const val GOOGLE_PLAY_URI = "https://play.google.com/store/apps/details?id=com.manoj.dlt"
      const val WEB_APP_LINK = "https://sweltering-fire-2158.firebaseapp.com/"
+     const val PRIVACY_POLICY_URL = "https://manojmadanmohan.github.io/dlt/privacy_policy"
      var ENVIRONMENT:CONFIG = BuildConfig.CONFIG
 
     @JvmStatic
