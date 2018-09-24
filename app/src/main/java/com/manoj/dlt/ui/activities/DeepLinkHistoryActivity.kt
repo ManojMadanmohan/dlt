@@ -132,7 +132,7 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
     private fun configurePrivacyPolicy() {
         _privacyPolicy!!.setOnClickListener(object: View.OnClickListener {
             override fun onClick(p0: View?) {
-                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://manojmadanmohan.github.io/dlt/privacy_policy"))
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.PRIVACY_POLICY_URL))
                 startActivity(browserIntent)
             }
         })
