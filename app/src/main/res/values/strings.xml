@@ -21,4 +21,6 @@
     <string name="onboarding_launch_title">Launch the deep link…</string>
     <string name="onboarding_history_title">And when you return, your history will be saved!</string>
     <string name="deep_link_search_hint">Enter your deep link…</string>
+
+    <string name="privacy_policy"> <a href="https://manojmadanmohan.github.io/dlt/privacy_policy" target="_top">Privacy Policy</a> </string>
 </resources>

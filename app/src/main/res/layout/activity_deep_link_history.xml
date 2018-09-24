@@ -61,6 +61,18 @@
                     android:paddingRight="@dimen/activity_horizontal_medium_margin"
                     android:listSelector="?attr/selectableItemBackground"
                     android:divider="@color/Gray"/>
+            <TextView
+                android:padding="8dp"
+                android:id="@+id/privacy_policy"
+                android:clickable="true"
+                android:focusable="true"
+                android:autoLink="web"
+                android:background="@color/White"
+                android:text="@string/privacy_policy"
+                android:gravity="center"
+                android:layout_gravity="bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
             <View
                 android:id="@+id/list_focus_overlay"
                 android:layout_width="match_parent"
