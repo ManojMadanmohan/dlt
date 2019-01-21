@@ -3,18 +3,17 @@ package com.manoj.dlt.features
 import android.content.Context
 import com.manoj.dlt.Constants
 import com.manoj.dlt.DbConstants
-import com.manoj.dlt.DeepLinkTestApplication
 import com.manoj.dlt.events.DeepLinkFireEvent
 import com.manoj.dlt.interfaces.IDeepLinkHistory
+import com.manoj.dlt.interfaces.IProfileFeature
 import com.manoj.dlt.models.DeepLinkInfo
 import com.manoj.dlt.models.ResultType
-import com.manoj.dlt.utils.SingletonHolder
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.*
 import javax.inject.Inject
 
-class DeepLinkHistoryFeature @Inject constructor(contextIn: Context): IDeepLinkHistory{
+class DeepLinkHistoryFeature @Inject constructor(contextIn: Context, val profileFeature: IProfileFeature): IDeepLinkHistory{
 
     val _fileSystem: FileSystem
     val _context: Context = contextIn
@@ -72,7 +71,7 @@ class DeepLinkHistoryFeature @Inject constructor(contextIn: Context): IDeepLinkH
     }
 
     private fun addLinkToFirebaseHistory(deepLinkInfo: DeepLinkInfo) {
-        val baseUserReference = DeepLinkTestApplication.Companion.component.getProfileFeature().getCurrentUserFirebaseBaseRef()
+        val baseUserReference = profileFeature.getCurrentUserFirebaseBaseRef()
         val linkReference = baseUserReference.child(DbConstants.USER_HISTORY).child(deepLinkInfo.id)
         val infoMap = object : HashMap<String, Any?>() {
             init {
@@ -90,7 +89,7 @@ class DeepLinkHistoryFeature @Inject constructor(contextIn: Context): IDeepLinkH
     }
 
     private fun clearFirebaseHistory() {
-        val baseUserReference = DeepLinkTestApplication.component.getProfileFeature().getCurrentUserFirebaseBaseRef()
+        val baseUserReference = profileFeature.getCurrentUserFirebaseBaseRef()
         val historyRef = baseUserReference.child(DbConstants.USER_HISTORY)
         historyRef.setValue(null)
     }
@@ -100,7 +99,7 @@ class DeepLinkHistoryFeature @Inject constructor(contextIn: Context): IDeepLinkH
     }
 
     private fun removeLinkFromFirebaseHistory(deepLinkId: String) {
-        val baseUserReference = DeepLinkTestApplication.component.getProfileFeature().getCurrentUserFirebaseBaseRef()
+        val baseUserReference = profileFeature.getCurrentUserFirebaseBaseRef()
         val linkReference = baseUserReference.child(DbConstants.USER_HISTORY).child(deepLinkId)
         linkReference.setValue(null)
     }
