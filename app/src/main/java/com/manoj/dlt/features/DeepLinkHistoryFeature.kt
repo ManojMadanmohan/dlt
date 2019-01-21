@@ -5,6 +5,7 @@ import com.manoj.dlt.Constants
 import com.manoj.dlt.DbConstants
 import com.manoj.dlt.events.DeepLinkFireEvent
 import com.manoj.dlt.interfaces.IDeepLinkHistory
+import com.manoj.dlt.interfaces.IFileSystem
 import com.manoj.dlt.interfaces.IProfileFeature
 import com.manoj.dlt.models.DeepLinkInfo
 import com.manoj.dlt.models.ResultType
@@ -12,14 +13,14 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Named
 
-class DeepLinkHistoryFeature @Inject constructor(contextIn: Context, val profileFeature: IProfileFeature): IDeepLinkHistory{
+class DeepLinkHistoryFeature @Inject constructor(contextIn: Context, val profileFeature: IProfileFeature,
+                                                 @Named(Constants.DEEP_LINK_HISTORY_KEY) val _fileSystem: IFileSystem): IDeepLinkHistory{
 
-    val _fileSystem: FileSystem
     val _context: Context = contextIn
 
     init {
-        _fileSystem = FileSystem(_context, Constants.DEEP_LINK_HISTORY_KEY)
         EventBus.getDefault().register(this)
     }
 

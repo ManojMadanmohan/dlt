@@ -9,7 +9,7 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
-@Module(includes = [ContextModule::class])
+@Module(includes = [UtilsModule::class])
 abstract class FeaturesModule {
 
     @Singleton
