@@ -8,8 +8,9 @@ import com.manoj.dlt.interfaces.IProfileFeature
 import com.manoj.dlt.utils.SingletonHolder
 import com.manoj.dlt.utils.Utilities
 import java.util.*
+import javax.inject.Inject
 
-class ProfileFeature private constructor(context: Context): IProfileFeature
+class ProfileFeature @Inject constructor(context: Context): IProfileFeature
 {
     private val _fileSystem: FileSystem
     private var _userId: String?
@@ -24,10 +25,6 @@ class ProfileFeature private constructor(context: Context): IProfileFeature
         }
 
         Log.d("profile", "user id = " + _userId)
-    }
-
-    companion object: SingletonHolder<ProfileFeature, Context>(::ProfileFeature) {
-
     }
 
     override fun getUserId(): String {

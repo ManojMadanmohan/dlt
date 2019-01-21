@@ -6,6 +6,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.manoj.dlt.Constants
 import com.manoj.dlt.DbConstants
+import com.manoj.dlt.DeepLinkTestApplication
 import com.manoj.dlt.utils.FirebaseChildAddedListener
 import com.manoj.dlt.utils.SingletonHolder
 import com.manoj.dlt.utils.Utilities
@@ -18,7 +19,7 @@ class LinkQueueHandler private constructor(context: Context) {
     private val _queueReference: DatabaseReference
 
     init {
-        _queueReference = ProfileFeature.getInstance(context).getCurrentUserFirebaseBaseRef().child(DbConstants.LINK_QUEUE)
+        _queueReference = DeepLinkTestApplication.component.getProfileFeature().getCurrentUserFirebaseBaseRef().child(DbConstants.LINK_QUEUE)
         _queueListener = getQueueListener()
     }
 
@@ -49,7 +50,7 @@ class LinkQueueHandler private constructor(context: Context) {
                 val qId = dataSnapshot.key
                 val deepLink = dataSnapshot.value.toString()
                 Utilities.checkAndFireDeepLink(deepLink, context)
-                Utilities.logLinkViaWeb(deepLink, ProfileFeature.getInstance(context).getUserId(), context)
+                Utilities.logLinkViaWeb(deepLink, DeepLinkTestApplication.component.getProfileFeature().getUserId(), context)
                 _queueReference.child(qId).setValue(null)
             }
         }

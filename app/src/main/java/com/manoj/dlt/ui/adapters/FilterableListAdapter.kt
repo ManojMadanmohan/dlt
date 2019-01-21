@@ -9,7 +9,7 @@ import android.widget.Filterable
 
 import java.util.ArrayList
 
-abstract class FilterableListAdapter<T:Any>(protected var _originalList: ArrayList<T>, defaultListEmpty: Boolean) : BaseAdapter(), Filterable {
+abstract class FilterableListAdapter<T:Any>(protected var _originalList: List<T>, defaultListEmpty: Boolean) : BaseAdapter(), Filterable {
     protected var _resultList: MutableList<T>
     protected var _searchString: String
 
@@ -31,7 +31,7 @@ abstract class FilterableListAdapter<T:Any>(protected var _originalList: ArrayLi
         return _resultList[i]
     }
 
-    fun updateBaseData(baseData: ArrayList<T>) {
+    fun updateBaseData(baseData: List<T>) {
         _originalList = baseData
         updateResults(_searchString)
     }

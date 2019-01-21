@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.manoj.dlt.Constants
 import com.manoj.dlt.DbConstants
+import com.manoj.dlt.DeepLinkTestApplication
 import com.manoj.dlt.R
 import com.manoj.dlt.events.DeepLinkFireEvent
 import com.manoj.dlt.features.DeepLinkHistoryFeature
@@ -85,7 +86,7 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
     private fun setFabListeners() {
         _fabMenu!!.findViewById<View>(R.id.fab_web).setOnClickListener {
             if (Constants.isFirebaseAvailable(this@DeepLinkHistoryActivity)) {
-                val userId = ProfileFeature.getInstance(this@DeepLinkHistoryActivity).getUserId()
+                val userId = DeepLinkTestApplication.component.getProfileFeature().getUserId()
                 Utilities.showAlert("Fire from your PC", "go to " + Constants.WEB_APP_LINK + userId, this@DeepLinkHistoryActivity)
             } else {
                 Utilities.raiseError(getString(R.string.play_services_error), this@DeepLinkHistoryActivity)
@@ -240,7 +241,7 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
             //Attach callback to init adapter from data in firebase
             _presenter.attachFirebaseListener(this);
         } else {
-            val deepLinkInfoList = DeepLinkHistoryFeature.getInstance(this).getLinkHistoryFromFileSystem()
+            val deepLinkInfoList = DeepLinkTestApplication.component.getDeepLinkHistoryFeature().getLinkHistoryFromFileSystem()
             if (deepLinkInfoList.size > 0) {
                 showShortcutBannerIfNeeded()
             }

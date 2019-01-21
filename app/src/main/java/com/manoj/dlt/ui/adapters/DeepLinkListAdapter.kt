@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import com.manoj.dlt.DeepLinkTestApplication
 
 import com.manoj.dlt.R
 import com.manoj.dlt.features.DeepLinkHistoryFeature
@@ -45,9 +46,9 @@ class DeepLinkListAdapter(originalList: ArrayList<DeepLinkInfo>, private val _co
         }
 
         view.findViewById<View>(R.id.deep_link_remove).setOnClickListener {
-            _originalList.removeAt(position)
+            _originalList = _originalList.minus(deepLinkInfo)
             updateResults(_searchString)
-            DeepLinkHistoryFeature.getInstance(_context).removeLinkFromHistory(deepLinkInfo.id)
+            DeepLinkTestApplication.component.getDeepLinkHistoryFeature().removeLinkFromHistory(deepLinkInfo.id)
         }
         return view
     }
