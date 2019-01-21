@@ -11,8 +11,9 @@ import com.manoj.dlt.utils.SingletonHolder
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.*
+import javax.inject.Inject
 
-class DeepLinkHistoryFeature private constructor(contextIn: Context): IDeepLinkHistory{
+class DeepLinkHistoryFeature @Inject constructor(contextIn: Context): IDeepLinkHistory{
 
     val _fileSystem: FileSystem
     val _context: Context = contextIn
