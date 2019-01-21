@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 
 import com.manoj.dlt.R
@@ -23,7 +24,7 @@ class ConfirmShortcutDialog : DialogFragment() {
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         extractData()
         val view = inflater!!.inflate(R.layout.confirm_shortcut_dialog, container, false)
         initView(view)
@@ -31,8 +32,8 @@ class ConfirmShortcutDialog : DialogFragment() {
     }
 
     private fun extractData() {
-        _deepLink = arguments.getString(KEY_DEEP_LINK)
-        _defaultLabel = arguments.getString(KEY_LABEL, "")
+        _deepLink = arguments?.getString(KEY_DEEP_LINK)
+        _defaultLabel = arguments?.getString(KEY_LABEL, "")
     }
 
     private fun initView(view: View) {
@@ -41,9 +42,9 @@ class ConfirmShortcutDialog : DialogFragment() {
             labelEditText.setText(_defaultLabel)
             labelEditText.setSelection(_defaultLabel!!.length)
         }
-        view.findViewById(R.id.confirm_shortcut_negative).setOnClickListener { dismiss() }
-        view.findViewById(R.id.confirm_shortcut_positive).setOnClickListener {
-            val shortcutAdded = Utilities.addShortcut(_deepLink!!, activity, labelEditText.text.toString())
+        view.findViewById<View>(R.id.confirm_shortcut_negative).setOnClickListener { dismiss() }
+        view.findViewById<View>(R.id.confirm_shortcut_positive).setOnClickListener {
+            val shortcutAdded = Utilities.addShortcut(_deepLink!!, activity!!, labelEditText.text.toString())
             if (shortcutAdded) {
                 Toast.makeText(activity, "shortcut added", Toast.LENGTH_LONG).show()
             } else {

@@ -44,7 +44,7 @@ class DeepLinkListAdapter(originalList: ArrayList<DeepLinkInfo>, private val _co
             (view.findViewById(R.id.deep_link_icon) as ImageView).setImageDrawable(_context.resources.getDrawable(R.drawable.ic_warning_red_24_px))
         }
 
-        view.findViewById(R.id.deep_link_remove).setOnClickListener {
+        view.findViewById<View>(R.id.deep_link_remove).setOnClickListener {
             _originalList.removeAt(position)
             updateResults(_searchString)
             DeepLinkHistoryFeature.getInstance(_context).removeLinkFromHistory(deepLinkInfo.id)

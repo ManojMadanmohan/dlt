@@ -69,7 +69,7 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
         _privacyPolicy = findViewById(R.id.privacy_policy) as TextView
         _adapter = DeepLinkListAdapter(ArrayList(), this)
         configureDeepLinkInput()
-        findViewById(R.id.deep_link_fire).setOnClickListener { extractAndFireLink() }
+        findViewById<View>(R.id.deep_link_fire).setOnClickListener { extractAndFireLink() }
         setFabMenuActions()
         setAppropriateLayout()
         configureListView()
@@ -83,7 +83,7 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
     }
 
     private fun setFabListeners() {
-        _fabMenu!!.findViewById(R.id.fab_web).setOnClickListener {
+        _fabMenu!!.findViewById<View>(R.id.fab_web).setOnClickListener {
             if (Constants.isFirebaseAvailable(this@DeepLinkHistoryActivity)) {
                 val userId = ProfileFeature.getInstance(this@DeepLinkHistoryActivity).getUserId()
                 Utilities.showAlert("Fire from your PC", "go to " + Constants.WEB_APP_LINK + userId, this@DeepLinkHistoryActivity)
@@ -91,8 +91,8 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
                 Utilities.raiseError(getString(R.string.play_services_error), this@DeepLinkHistoryActivity)
             }
         }
-        _fabMenu!!.findViewById(R.id.fab_share).setOnClickListener { Utilities.shareApp(this@DeepLinkHistoryActivity) }
-        _fabMenu!!.findViewById(R.id.fab_rate).setOnClickListener {
+        _fabMenu!!.findViewById<View>(R.id.fab_share).setOnClickListener { Utilities.shareApp(this@DeepLinkHistoryActivity) }
+        _fabMenu!!.findViewById<View>(R.id.fab_rate).setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(Constants.GOOGLE_PLAY_URI)))
             //Do not show app rate dialog anymore
             AppRate.with(this@DeepLinkHistoryActivity).setAgreeShowDialog(false)
@@ -184,7 +184,7 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
     }
 
     private fun showDeepLinkRootView() {
-        findViewById(R.id.deep_link_history_root).visibility = View.VISIBLE
+        findViewById<View>(R.id.deep_link_history_root).visibility = View.VISIBLE
         _deepLinkInput!!.requestFocus()
         Utilities.showKeyboard(this)
     }
@@ -245,7 +245,7 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
                 showShortcutBannerIfNeeded()
             }
             _adapter!!.updateBaseData(deepLinkInfoList)
-            findViewById(R.id.progress_wheel).visibility = View.GONE
+            findViewById<View>(R.id.progress_wheel).visibility = View.GONE
         }
         _adapter!!.updateResults(_deepLinkInput!!.getText().toString())
     }
@@ -286,16 +286,16 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
 
     private fun showShortcutBannerIfNeeded() {
         if (!Utilities.isShortcutHintSeen(this)) {
-            findViewById(R.id.shortcut_hint_banner).visibility = View.VISIBLE
-            findViewById(R.id.shortcut_hint_banner_cancel).setOnClickListener {
+            findViewById<View>(R.id.shortcut_hint_banner).visibility = View.VISIBLE
+            findViewById<View>(R.id.shortcut_hint_banner_cancel).setOnClickListener {
                 Utilities.setShortcutBannerSeen(this@DeepLinkHistoryActivity)
-                findViewById(R.id.shortcut_hint_banner).visibility = View.GONE
+                findViewById<View>(R.id.shortcut_hint_banner).visibility = View.GONE
             }
         }
     }
 
     private fun setContentInFocus(hideFocus: Boolean) {
-        val overlay = findViewById(R.id.list_focus_overlay)
+        val overlay = findViewById<View>(R.id.list_focus_overlay)
         if (hideFocus) {
             overlay.visibility = View.VISIBLE
         } else {
