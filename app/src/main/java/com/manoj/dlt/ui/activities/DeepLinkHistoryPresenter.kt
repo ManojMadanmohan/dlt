@@ -10,15 +10,17 @@ import com.manoj.dlt.DbConstants
 import com.manoj.dlt.DeepLinkTestApplication
 import com.manoj.dlt.features.ProfileFeature
 import com.manoj.dlt.interfaces.DeepLinkHistoryUpdateListener
+import com.manoj.dlt.interfaces.IProfileFeature
 import com.manoj.dlt.models.DeepLinkInfo
 import com.manoj.dlt.utils.Utilities
 import java.util.*
+import javax.inject.Inject
 
 /**
  * Created by baldor on 16/6/18.
  */
 
-class DeepLinkHistoryPresenter(var _historyUpdateListener: DeepLinkHistoryUpdateListener){
+class DeepLinkHistoryPresenter constructor(var _historyUpdateListener: DeepLinkHistoryUpdateListener, val profileFeature: IProfileFeature){
 
     private var _previousClipboardText: String? = null
     private var _firebaseListener: ValueEventListener = getFirebaseHistoryListener()
@@ -69,7 +71,7 @@ class DeepLinkHistoryPresenter(var _historyUpdateListener: DeepLinkHistoryUpdate
 
     public fun attachFirebaseListener(context: Context) {
         if (Constants.isFirebaseAvailable(context)) {
-            val baseUserReference = DeepLinkTestApplication.component.getProfileFeature().getCurrentUserFirebaseBaseRef()
+            val baseUserReference = profileFeature.getCurrentUserFirebaseBaseRef()
             val linkReference = baseUserReference.child(DbConstants.USER_HISTORY)
             linkReference.addValueEventListener(_firebaseListener)
         }
@@ -77,7 +79,7 @@ class DeepLinkHistoryPresenter(var _historyUpdateListener: DeepLinkHistoryUpdate
 
     public fun removeFirebaseListener(context: Context) {
         if (Constants.isFirebaseAvailable(context)) {
-            val baseUserReference = DeepLinkTestApplication.component.getProfileFeature().getCurrentUserFirebaseBaseRef()
+            val baseUserReference = profileFeature.getCurrentUserFirebaseBaseRef()
             val linkReference = baseUserReference.child(DbConstants.USER_HISTORY)
             linkReference.removeEventListener(_firebaseListener)
         }

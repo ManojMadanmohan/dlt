@@ -20,40 +20,34 @@ import dagger.internal.DaggerCollections
 import io.fabric.sdk.android.Fabric
 import javax.inject.Inject
 
-class DeepLinkTestApplication: Application(), HasActivityInjector {
+class DeepLinkTestApplication: DaggerApplication() {
 
     @Inject
-    lateinit var activityInjector: DispatchingAndroidInjector<Activity>
+    lateinit var _profileFeature: ProfileFeature
+    @Inject
+    lateinit var _linkQueueHandler: LinkQueueHandler
 
-    companion object {
-        lateinit var component: AppComponent
-        private set
-    }
-
-    override fun activityInjector(): AndroidInjector<Activity> {
-        return activityInjector
-    }
-
-    fun getComponent(): AppComponent = component
-
-    override fun onCreate() {
-        super.onCreate()
-        component = DaggerAppComponent.builder()
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
+        return DaggerAppComponent.builder()
                 .contextModule(ContextModule(this))
                 .build()
-        component.inject(this)
+    }
+
+    override fun onCreate() {
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+        super.onCreate()
+
         if(Constants.ENVIRONMENT.equals(Constants.CONFIG.PRODUCTION)) {
             Fabric.with(this, Crashlytics())
-            Crashlytics.setUserIdentifier(component.getProfileFeature().getUserId())
-            Crashlytics.setString("user id", component.getProfileFeature().getUserId())
+            Crashlytics.setUserIdentifier(_profileFeature.getUserId())
+            Crashlytics.setString("user id", _profileFeature.getUserId())
         } else
         {
             Toast.makeText(applicationContext, "In Testing mode", Toast.LENGTH_LONG).show()
         }
         if(Constants.isFirebaseAvailable(this))
         {
-            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-            LinkQueueHandler.getInstance(this).runQueueListener()
+            _linkQueueHandler.runQueueListener()
         }
         Utilities.initializeAppRateDialog(applicationContext)
     }

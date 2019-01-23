@@ -11,12 +11,13 @@ import com.manoj.dlt.DeepLinkTestApplication
 
 import com.manoj.dlt.R
 import com.manoj.dlt.features.DeepLinkHistoryFeature
+import com.manoj.dlt.interfaces.IDeepLinkHistory
 import com.manoj.dlt.models.DeepLinkInfo
 import com.manoj.dlt.utils.Utilities
 
 import java.util.ArrayList
 
-class DeepLinkListAdapter(originalList: ArrayList<DeepLinkInfo>, private val _context: Context) : FilterableListAdapter<DeepLinkInfo>(originalList, false) {
+class DeepLinkListAdapter(originalList: ArrayList<DeepLinkInfo>, private val _context: Context, val iDeepLinkHistory: IDeepLinkHistory) : FilterableListAdapter<DeepLinkInfo>(originalList, false) {
 
     override fun getItemId(i: Int): Long {
         return 0
@@ -48,7 +49,7 @@ class DeepLinkListAdapter(originalList: ArrayList<DeepLinkInfo>, private val _co
         view.findViewById<View>(R.id.deep_link_remove).setOnClickListener {
             _originalList = _originalList.minus(deepLinkInfo)
             updateResults(_searchString)
-            DeepLinkTestApplication.component.getDeepLinkHistoryFeature().removeLinkFromHistory(deepLinkInfo.id)
+            iDeepLinkHistory.removeLinkFromHistory(deepLinkInfo.id)
         }
         return view
     }

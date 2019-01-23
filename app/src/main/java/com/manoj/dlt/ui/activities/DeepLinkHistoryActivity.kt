@@ -30,20 +30,24 @@ import com.manoj.dlt.events.DeepLinkFireEvent
 import com.manoj.dlt.features.DeepLinkHistoryFeature
 import com.manoj.dlt.features.ProfileFeature
 import com.manoj.dlt.interfaces.DeepLinkHistoryUpdateListener
+import com.manoj.dlt.interfaces.IDeepLinkHistory
+import com.manoj.dlt.interfaces.IProfileFeature
 import com.manoj.dlt.models.DeepLinkInfo
 import com.manoj.dlt.models.ResultType
 import com.manoj.dlt.ui.ConfirmShortcutDialog
 import com.manoj.dlt.ui.TutorialUtil
 import com.manoj.dlt.ui.adapters.DeepLinkListAdapter
 import com.manoj.dlt.utils.*
+import dagger.android.support.DaggerAppCompatActivity
 import hotchemi.android.rate.AppRate
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 
-class DeepLinkHistoryActivity: AppCompatActivity() {
+class DeepLinkHistoryActivity: DaggerAppCompatActivity() {
 
     val TAG_DIALOG = "dialog"
     private var _listView: ListView? = null
@@ -52,14 +56,20 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
     private var _privacyPolicy: TextView? = null
     private var _adapter: DeepLinkListAdapter? = null
 
-    private var _presenter: DeepLinkHistoryPresenter = getPresenter();
+    @Inject
+    lateinit var _profileFeature: IProfileFeature
+    @Inject
+    lateinit var _historyFeature: IDeepLinkHistory
+
+    private lateinit var _presenter: DeepLinkHistoryPresenter;
 
     fun getPresenter(): DeepLinkHistoryPresenter {
-        return DeepLinkHistoryPresenter(getHistoryUpdateListener())
+        return DeepLinkHistoryPresenter(getHistoryUpdateListener(), _profileFeature)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        _presenter = getPresenter()
         setContentView(R.layout.activity_deep_link_history)
         initView()
     }
@@ -68,7 +78,7 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
         _deepLinkInput = findViewById(R.id.deep_link_input) as EditText
         _listView = findViewById(R.id.deep_link_list_view) as ListView
         _privacyPolicy = findViewById(R.id.privacy_policy) as TextView
-        _adapter = DeepLinkListAdapter(ArrayList(), this)
+        _adapter = DeepLinkListAdapter(ArrayList(), this, _historyFeature)
         configureDeepLinkInput()
         findViewById<View>(R.id.deep_link_fire).setOnClickListener { extractAndFireLink() }
         setFabMenuActions()
@@ -86,7 +96,7 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
     private fun setFabListeners() {
         _fabMenu!!.findViewById<View>(R.id.fab_web).setOnClickListener {
             if (Constants.isFirebaseAvailable(this@DeepLinkHistoryActivity)) {
-                val userId = DeepLinkTestApplication.component.getProfileFeature().getUserId()
+                val userId = _profileFeature.getUserId()
                 Utilities.showAlert("Fire from your PC", "go to " + Constants.WEB_APP_LINK + userId, this@DeepLinkHistoryActivity)
             } else {
                 Utilities.raiseError(getString(R.string.play_services_error), this@DeepLinkHistoryActivity)
@@ -241,7 +251,7 @@ class DeepLinkHistoryActivity: AppCompatActivity() {
             //Attach callback to init adapter from data in firebase
             _presenter.attachFirebaseListener(this);
         } else {
-            val deepLinkInfoList = DeepLinkTestApplication.component.getDeepLinkHistoryFeature().getLinkHistoryFromFileSystem()
+            val deepLinkInfoList = _historyFeature.getLinkHistoryFromFileSystem()
             if (deepLinkInfoList.size > 0) {
                 showShortcutBannerIfNeeded()
             }

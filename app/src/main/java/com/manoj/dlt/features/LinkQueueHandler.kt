@@ -7,11 +7,13 @@ import com.google.firebase.database.DatabaseReference
 import com.manoj.dlt.Constants
 import com.manoj.dlt.DbConstants
 import com.manoj.dlt.DeepLinkTestApplication
+import com.manoj.dlt.interfaces.IProfileFeature
 import com.manoj.dlt.utils.FirebaseChildAddedListener
 import com.manoj.dlt.utils.SingletonHolder
 import com.manoj.dlt.utils.Utilities
+import javax.inject.Inject
 
-class LinkQueueHandler private constructor(context: Context) {
+class LinkQueueHandler @Inject constructor(context: Context, val profileFeature: IProfileFeature) {
 
     private var _isProcessing: Boolean = false
     private val context: Context = context
@@ -19,12 +21,8 @@ class LinkQueueHandler private constructor(context: Context) {
     private val _queueReference: DatabaseReference
 
     init {
-        _queueReference = DeepLinkTestApplication.component.getProfileFeature().getCurrentUserFirebaseBaseRef().child(DbConstants.LINK_QUEUE)
+        _queueReference = profileFeature.getCurrentUserFirebaseBaseRef().child(DbConstants.LINK_QUEUE)
         _queueListener = getQueueListener()
-    }
-
-    companion object : SingletonHolder<LinkQueueHandler, Context>(::LinkQueueHandler){
-
     }
 
     fun runQueueListener() {
@@ -50,7 +48,7 @@ class LinkQueueHandler private constructor(context: Context) {
                 val qId = dataSnapshot.key
                 val deepLink = dataSnapshot.value.toString()
                 Utilities.checkAndFireDeepLink(deepLink, context)
-                Utilities.logLinkViaWeb(deepLink, DeepLinkTestApplication.component.getProfileFeature().getUserId(), context)
+                Utilities.logLinkViaWeb(deepLink, profileFeature.getUserId(), context)
                 _queueReference.child(qId).setValue(null)
             }
         }
