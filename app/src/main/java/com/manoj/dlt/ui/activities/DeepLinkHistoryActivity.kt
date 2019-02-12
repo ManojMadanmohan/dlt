@@ -54,23 +54,17 @@ class DeepLinkHistoryActivity: DaggerAppCompatActivity() {
     private var _fabMenu: FloatingActionsMenu? = null
     private var _deepLinkInput: EditText? = null
     private var _privacyPolicy: TextView? = null
-    private var _adapter: DeepLinkListAdapter? = null
 
     @Inject
-    lateinit var _profileFeature: IProfileFeature
+    lateinit var _adapter: DeepLinkListAdapter
+
     @Inject
-    lateinit var _historyFeature: IDeepLinkHistory
-
-    private lateinit var _presenter: DeepLinkHistoryPresenter;
-
-    fun getPresenter(): DeepLinkHistoryPresenter {
-        return DeepLinkHistoryPresenter(getHistoryUpdateListener(), _profileFeature)
-    }
+    lateinit var _presenter: DeepLinkHistoryPresenter;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _presenter = getPresenter()
         setContentView(R.layout.activity_deep_link_history)
+        _presenter._historyUpdateListener = getHistoryUpdateListener()
         initView()
     }
 
@@ -78,7 +72,6 @@ class DeepLinkHistoryActivity: DaggerAppCompatActivity() {
         _deepLinkInput = findViewById(R.id.deep_link_input) as EditText
         _listView = findViewById(R.id.deep_link_list_view) as ListView
         _privacyPolicy = findViewById(R.id.privacy_policy) as TextView
-        _adapter = DeepLinkListAdapter(ArrayList(), this, _historyFeature)
         configureDeepLinkInput()
         findViewById<View>(R.id.deep_link_fire).setOnClickListener { extractAndFireLink() }
         setFabMenuActions()
@@ -96,7 +89,7 @@ class DeepLinkHistoryActivity: DaggerAppCompatActivity() {
     private fun setFabListeners() {
         _fabMenu!!.findViewById<View>(R.id.fab_web).setOnClickListener {
             if (Constants.isFirebaseAvailable(this@DeepLinkHistoryActivity)) {
-                val userId = _profileFeature.getUserId()
+                val userId = _presenter.getUserId()
                 Utilities.showAlert("Fire from your PC", "go to " + Constants.WEB_APP_LINK + userId, this@DeepLinkHistoryActivity)
             } else {
                 Utilities.raiseError(getString(R.string.play_services_error), this@DeepLinkHistoryActivity)
@@ -251,7 +244,7 @@ class DeepLinkHistoryActivity: DaggerAppCompatActivity() {
             //Attach callback to init adapter from data in firebase
             _presenter.attachFirebaseListener(this);
         } else {
-            val deepLinkInfoList = _historyFeature.getLinkHistoryFromFileSystem()
+            val deepLinkInfoList = _presenter.getDeepLinkHistoryListFromDisk()
             if (deepLinkInfoList.size > 0) {
                 showShortcutBannerIfNeeded()
             }

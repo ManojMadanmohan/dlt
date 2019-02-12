@@ -16,8 +16,9 @@ import com.manoj.dlt.models.DeepLinkInfo
 import com.manoj.dlt.utils.Utilities
 
 import java.util.ArrayList
+import javax.inject.Inject
 
-class DeepLinkListAdapter(originalList: ArrayList<DeepLinkInfo>, private val _context: Context, val iDeepLinkHistory: IDeepLinkHistory) : FilterableListAdapter<DeepLinkInfo>(originalList, false) {
+class DeepLinkListAdapter @Inject constructor(private val _context: Context, val iDeepLinkHistory: IDeepLinkHistory) : FilterableListAdapter<DeepLinkInfo>(ArrayList(), false) {
 
     override fun getItemId(i: Int): Long {
         return 0

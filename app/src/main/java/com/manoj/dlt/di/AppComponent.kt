@@ -21,12 +21,6 @@ import javax.inject.Singleton
     ActivityModule::class])
 public interface AppComponent: AndroidInjector<DeepLinkTestApplication> {
 
-    fun getContext(): Context
-
-    fun getProfileFeature(): IProfileFeature
-
-    fun getDeepLinkHistoryFeature(): IDeepLinkHistory
-
 //    @Component.Builder
 //    interface Builder {
 //

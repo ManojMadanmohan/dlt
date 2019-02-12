@@ -34,7 +34,9 @@ class DeepLinkTestApplication: DaggerApplication() {
     }
 
     override fun onCreate() {
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+        if(Constants.isFirebaseAvailable(this)) {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+        }
         super.onCreate()
 
         if(Constants.ENVIRONMENT.equals(Constants.CONFIG.PRODUCTION)) {

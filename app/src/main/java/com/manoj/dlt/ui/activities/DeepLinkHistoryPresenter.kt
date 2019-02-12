@@ -10,6 +10,7 @@ import com.manoj.dlt.DbConstants
 import com.manoj.dlt.DeepLinkTestApplication
 import com.manoj.dlt.features.ProfileFeature
 import com.manoj.dlt.interfaces.DeepLinkHistoryUpdateListener
+import com.manoj.dlt.interfaces.IDeepLinkHistory
 import com.manoj.dlt.interfaces.IProfileFeature
 import com.manoj.dlt.models.DeepLinkInfo
 import com.manoj.dlt.utils.Utilities
@@ -20,11 +21,17 @@ import javax.inject.Inject
  * Created by baldor on 16/6/18.
  */
 
-class DeepLinkHistoryPresenter constructor(var _historyUpdateListener: DeepLinkHistoryUpdateListener, val profileFeature: IProfileFeature){
+class DeepLinkHistoryPresenter @Inject constructor(val profileFeature: IProfileFeature){
+
+
+    @Inject
+    lateinit var _profileFeature: IProfileFeature
+    @Inject
+    lateinit var _historyFeature: IDeepLinkHistory
 
     private var _previousClipboardText: String? = null
     private var _firebaseListener: ValueEventListener = getFirebaseHistoryListener()
-
+    var _historyUpdateListener: DeepLinkHistoryUpdateListener?
 
     public fun getInputString(context: Context, currentInput: String): String {
         val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -83,6 +90,14 @@ class DeepLinkHistoryPresenter constructor(var _historyUpdateListener: DeepLinkH
             val linkReference = baseUserReference.child(DbConstants.USER_HISTORY)
             linkReference.removeEventListener(_firebaseListener)
         }
+    }
+
+    fun getUserId(): String {
+        return _profileFeature.getUserId()
+    }
+
+    fun getDeepLinkHistoryListFromDisk(): List<DeepLinkInfo> {
+        return _historyFeature.getLinkHistoryFromFileSystem()
     }
 
 }
